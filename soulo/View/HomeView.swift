@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct HomeView: View {
+    var onOpenProfile: () -> Void = {}
+
     @EnvironmentObject var healthManager: HealthKitManager
     @EnvironmentObject var userManager: UserManager
     @State private var showCalorieScan = false
@@ -78,23 +80,26 @@ struct HomeView: View {
             
             Spacer()
             
-            // Avatar
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color(hex: "A78BFA"), Color(hex: "60A5FA")],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+            Button(action: onOpenProfile) {
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(hex: "A78BFA"), Color(hex: "60A5FA")],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
                         )
-                    )
-                    .frame(width: 52, height: 52)
-                    .shadow(color: Color(hex: "A78BFA").opacity(0.5), radius: 10)
-                
-                Text(userManager.user.avatarInitials)
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.white)
+                        .frame(width: 52, height: 52)
+                        .shadow(color: Color(hex: "A78BFA").opacity(0.5), radius: 10)
+                    
+                    Text(userManager.user.avatarInitials)
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.white)
+                }
             }
+            .buttonStyle(ScaleButtonStyle())
+            .accessibilityLabel("Open profile")
         }
         .padding(.horizontal, 20)
     }

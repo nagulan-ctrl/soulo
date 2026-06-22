@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct BlissReelsView: View {
+    var onOpenProfile: () -> Void = {}
+
     @EnvironmentObject var blissManager: BlissContentManager
     @EnvironmentObject var userManager: UserManager
     @EnvironmentObject var healthManager: HealthKitManager
@@ -90,25 +92,46 @@ struct BlissReelsView: View {
                 
                 Spacer()
                 
-                // Mood selector
-                Button(action: { withAnimation(.spring()) { showMoodPicker.toggle() } }) {
-                    HStack(spacing: 6) {
-                        Text(userManager.emotionalState.emoji)
-                            .font(.system(size: 16))
-                        Text(userManager.emotionalState.rawValue)
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundColor(.white)
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundColor(.white.opacity(0.5))
+                HStack(spacing: 10) {
+                    Button(action: { withAnimation(.spring()) { showMoodPicker.toggle() } }) {
+                        HStack(spacing: 6) {
+                            Text(userManager.emotionalState.emoji)
+                                .font(.system(size: 16))
+                            Text(userManager.emotionalState.rawValue)
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundColor(.white)
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.white.opacity(0.5))
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(
+                            Capsule()
+                                .fill(.ultraThinMaterial)
+                                .overlay(Capsule().stroke(Color.white.opacity(0.15), lineWidth: 1))
+                        )
                     }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(
-                        Capsule()
-                            .fill(.ultraThinMaterial)
-                            .overlay(Capsule().stroke(Color.white.opacity(0.15), lineWidth: 1))
-                    )
+
+                    Button(action: onOpenProfile) {
+                        ZStack {
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Color(hex: "A78BFA"), Color(hex: "60A5FA")],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 38, height: 38)
+
+                            Text(userManager.user.avatarInitials)
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .buttonStyle(ScaleButtonStyle())
+                    .accessibilityLabel("Open profile")
                 }
             }
             .padding(.horizontal, 20)
@@ -341,8 +364,19 @@ struct ReelCardView: View {
                 localSaved.toggle()
             }
             
-            // Share
-            ReelActionButton(icon: "paperplane.fill", count: nil, color: "60A5FA") {}
+            ShareLink(item: shareText) {
+                VStack(spacing: 4) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.white.opacity(0.1))
+                            .frame(width: 52, height: 52)
+                        Image(systemName: "paperplane.fill")
+                            .font(.system(size: 22, weight: .medium))
+                            .foregroundColor(Color(hex: "60A5FA"))
+                    }
+                }
+            }
+            .buttonStyle(ScaleButtonStyle())
             
             // Play button
             ZStack {
@@ -354,6 +388,18 @@ struct ReelCardView: View {
                     .font(.system(size: 18))
             }
         }
+    }
+
+    private var shareText: String {
+        """
+        \(reel.title)
+
+        \(reel.subtitle)
+
+        Affirmation: \(reel.affirmation)
+
+        Shared from Soulo.
+        """
     }
 }
 
@@ -543,4 +589,3 @@ extension Array {
 //
 //  Created by Nagulan Vijayakumar on 21/06/26.
 //
-
